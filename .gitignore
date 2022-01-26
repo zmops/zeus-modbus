@@ -74,3 +74,4 @@ fabric.properties
 venv/
 app/logs/
 *.pyc
+.idea/

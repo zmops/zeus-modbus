@@ -30,8 +30,20 @@ async def query_current(device_id: str) -> JSONResponse:
     """
     logger.info("查询当前数据")
 
-    device = device_settings.dict()[device_id]
+    device = device_settings.dict().get(device_id)
     logger.debug("当前设备信息: {}".format(device))
+
+    # 判断失败是否存在
+    if not device:
+        return JSONResponse(
+            content={
+                "data": None,
+                "msg": MsgEnum.error_device_not_found.value,
+                "success": False,
+                "code": CodeEnum.error.value,
+            },
+            status_code=HTTP_200_OK,
+        )
 
     device_model = device.get("model")
     device_ipaddress = device.get("ipaddress")
@@ -100,6 +112,7 @@ async def update_current(device_id: str, body: SchemaUpdateCurrent) -> JSONRespo
 
     # 解析查询设备信息
     device = device_settings.dict().get(device_id)
+    logger.debug("当前设备信息: {}".format(device))
 
     # 判断失败是否存在
     if not device:
