@@ -21,8 +21,8 @@ device_settings = DeviceSettings()
 router = APIRouter()
 
 
-@router.get("/data/query_current/{device_id}/", summary="指定设备查询数据")
-async def query_current(device_id: str) -> JSONResponse:
+@router.get("/data/query/{device_id}/", summary="查询指定设备数据")
+def query(device_id: str) -> JSONResponse:
     """
     单个设备查询此模型配置的所有寄存器数据
     :param device_id: 设备ID
@@ -49,7 +49,6 @@ async def query_current(device_id: str) -> JSONResponse:
     device_ipaddress = device.get("ipaddress")
     device_port = device.get("port")
     device_slave = device.get("slave")
-    device_sub = device.get("sub")
 
     # 根据设备类型来调用相应方法
     device_read = DeviceRead()
@@ -57,35 +56,15 @@ async def query_current(device_id: str) -> JSONResponse:
 
     # 判断设备模型是否匹配
     if not device_read_func:
-
-        # 不包含子设备
-        if not device_sub:
-            JSONResponse(
-                content={
-                    "data": None,
-                    "msg": MsgEnum.error_model_not_match.value,
-                    "success": False,
-                    "code": CodeEnum.error.value,
-                },
-                status_code=HTTP_200_OK
-            )
-        # 包含子设备
-        else:
-            payload = []
-            for sub in range(device_sub):
-                payload.append(
-                    {
-                        "data": None,
-                        "msg": MsgEnum.error_model_not_match.value,
-                        "success": False,
-                        "code": CodeEnum.error.value,
-                    }
-                )
-
-            JSONResponse(
-                content=payload,
-                status_code=HTTP_200_OK
-            )
+        return JSONResponse(
+            content={
+                "data": None,
+                "msg": MsgEnum.error_model_not_match.value,
+                "success": False,
+                "code": CodeEnum.error.value,
+            },
+            status_code=HTTP_200_OK
+        )
     else:
         payload = device_read_func(ipaddress=device_ipaddress, port=device_port, slave=device_slave)
 
@@ -100,8 +79,8 @@ async def query_current(device_id: str) -> JSONResponse:
         )
 
 
-@router.post("/data/update_current/{device_id}/", summary="指定设备更新数据")
-async def update_current(device_id: str, body: SchemaUpdateCurrent) -> JSONResponse:
+@router.post("/data/update/{device_id}/", summary="更新指定设备数据")
+def update(device_id: str, body: SchemaUpdateCurrent) -> JSONResponse:
     """
     单个设备更新单个寄存器数据
     :param device_id: 设备ID
