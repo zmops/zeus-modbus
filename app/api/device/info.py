@@ -21,7 +21,7 @@ router = APIRouter()
 
 
 @router.get("/info/query_device/", summary="查询设备信息")
-async def query_device() -> JSONResponse:
+def query_device() -> JSONResponse:
     """
     查询所有设备信息
     :return:
@@ -49,7 +49,7 @@ async def query_device() -> JSONResponse:
 
 
 @router.get("/info/query_model/", summary="查询型号信息")
-async def query_model() -> JSONResponse:
+def query_model() -> JSONResponse:
     """
     查询所有已定义的型号信息
     :return:
