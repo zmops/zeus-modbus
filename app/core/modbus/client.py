@@ -1,7 +1,11 @@
-# -*- coding: utf-8 -*-
-# modbus客户端
-# 作者: 三石
-# 时间: 2021-10-21
+#!/usr/bin/env python3
+"""
+@Project    ：zeus-modbus 
+@File       ：client.py 
+@Author     ：三石
+@Time       ：2022/6/20 10:32
+@Annotation : modbus客户端
+"""
 
 
 import logging
@@ -45,79 +49,178 @@ class ModbusClient(object):
         """
         self.client.close()
 
-    def read_discrete_inputs(self, address, count, unit):
+    def read_coils(self, address, count, unit) -> dict:
+        """
+        读线圈
+        :param address: 开始地址
+        :param count: 读取多少位
+        :param unit: 从地址
+        :return:
+        """
+        payload = {}
+        try:
+            response = self.client.read_coils(address=address, count=count, unit=unit)
+            logger.debug("Modbus read_coils 返回: {}".format(response))
+            for x, y in enumerate(response.bits):
+                payload["bit{}".format(address + x)] = y
+            logger.debug("payload: {}".format(payload))
+            return {
+                "success": True,
+                "payload": payload
+            }
+        except (AttributeError, ModbusException) as e:
+            logger.error("Modbus异常: {}".format(str(e)))
+            return {
+                "success": False,
+                "error": str(e)
+            }
+        finally:
+            self.client.close()
+
+    def read_discrete_inputs(self, address, count, unit) -> dict:
         """
         读写线圈
         :param address: 开始地址
         :param count: 读取多少位
-        :param unit: 从地址 默认1
-        :return:
+        :param unit: 从地址
+        @return:
         """
         payload = {}
         try:
             response = self.client.read_discrete_inputs(address=address, count=count, unit=unit)
+            logger.debug("Modbus read_discrete_inputs 返回: {}".format(response))
             for x, y in enumerate(response.bits):
-                payload["key{}".format(address + x)] = y
+                payload["bit{}".format(address + x)] = y
+            logger.debug("payload: {}".format(payload))
+            return {
+                "success": True,
+                "payload": payload
+            }
         except (AttributeError, ModbusException) as e:
-            payload["error"] = str(e)
+            logger.error("Modbus异常: {}".format(str(e)))
+            return {
+                "success": False,
+                "error": str(e)
+            }
+        finally:
+            self.client.close()
 
-        logger.info("payload: {}".format(payload))
-        return payload
-
-    def read_input_registers(self, address, count, unit):
+    def read_input_registers(self, address, count, unit) -> dict:
         """
         读写寄存器
         :param address: 开始地址
         :param count: 读取多少位
-        :param unit: 从地址 默认1
-        :return:
+        :param unit: 从地址
+        @return:
         """
         payload = {}
         try:
             response = self.client.read_input_registers(address=address, count=count, unit=unit)
-            payload = {}
+            logger.debug("Modbus read_input_registers 返回: {}".format(response))
             for x, y in enumerate(response.registers):
-                payload["key{}".format(address + x)] = y
+                payload[address + x] = y
+            logger.debug("payload: {}".format(payload))
+            return {
+                "success": True,
+                "payload": payload
+            }
         except (AttributeError, ModbusException) as e:
-            payload["error"] = str(e)
+            logger.error("Modbus异常: {}".format(str(e)))
+            return {
+                "success": False,
+                "error": str(e)
+            }
+        finally:
+            self.client.close()
 
-        logger.info("payload: {}".format(payload))
-        return payload
-
-    def read_holding_registers(self, address, count, unit):
+    def read_holding_registers(self, address, count, unit) -> dict:
         """
         读保持寄存器
         :param address: 开始地址
         :param count: 读取多少位
-        :param unit: 从地址 默认1
-        :return:
+        :param unit: 从地址
+        @return:
         """
         payload = {}
         try:
             response = self.client.read_holding_registers(address=address, count=count, unit=unit)
-            payload = {}
+            logger.debug("Modbus read_holding_registers 返回: {}".format(response))
             for x, y in enumerate(response.registers):
-                payload["key{}".format(address + x)] = y
+                payload[address + x] = y
+            logger.debug("payload: {}".format(payload))
+            return {
+                "success": True,
+                "payload": payload
+            }
         except (AttributeError, ModbusException) as e:
-            payload["error"] = str(e)
+            logger.error("Modbus异常: {}".format(str(e)))
+            return {
+                "success": False,
+                "error": str(e)
+            }
+        finally:
+            self.client.close()
 
-        logger.info("payload: {}".format(payload))
-        return payload
-
-    def write_register(self, address, value, unit):
+    def write_coil(self, address, value, unit) -> bool:
         """
-        写寄存器
+        写单个线圈
         :param address: 开始地址
-        :param value: 读取多少位
-        :param unit: 从地址 默认1
-        :return:
+        :param count: 写入值
+        :param unit: 从地址
+        @return:
         """
-
         try:
-            logger.info("写入寄存器 address: {}, value: {}, unit: {}".format(address, value, unit))
+            logger.info("写单个线圈 address: {}, value: {}, unit: {}".format(address, value, unit))
+            self.client.write_coil(address=address, value=value, unit=unit)
+            return True
+        except ModbusException as e:
+            logger.error("发生异常: {}".format(str(e)))
+            return False
+
+    def write_coils(self, address, values, unit) -> bool:
+        """
+        写多个线圈
+        :param address: 开始地址
+        :param count: 写入值
+        :param unit: 从地址
+        @return:
+        """
+        try:
+            logger.info("写多个线圈 address: {}, value: {}, unit: {}".format(address, values, unit))
+            self.client.write_coils(address=address, values=values, unit=unit)
+            return True
+        except ModbusException as e:
+            logger.error("发生异常: {}".format(str(e)))
+            return False
+
+    def write_register(self, address, value, unit) -> bool:
+        """
+        写单个寄存器
+        :param address: 开始地址
+        :param count: 写入值
+        :param unit: 从地址
+        @return:
+        """
+        try:
+            logger.info("写单个寄存器 address: {}, value: {}, unit: {}".format(address, value, unit))
             self.client.write_register(address=address, value=value, unit=unit)
             return True
         except ModbusException as e:
-            logger.error("发生异常: {}".format(e))
+            logger.error("发生异常: {}".format(str(e)))
             return False
 
+    def write_registers(self, address, values, unit) -> bool:
+        """
+        写多个寄存器
+        :param address: 开始地址
+        :param count: 写入值
+        :param unit: 从地址
+        @return:
+        """
+        try:
+            logger.info("写多个寄存器 address: {}, value: {}, unit: {}".format(address, values, unit))
+            self.client.write_registers(address=address, values=values, unit=unit)
+            return True
+        except ModbusException as e:
+            logger.error("发生异常: {}".format(str(e)))
+            return False
