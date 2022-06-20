@@ -20,17 +20,17 @@ class ConfigSettings(BaseSettings):
 
     # 接口前缀
     api_prefix: str = "/api"
-    device_prefix: str = "/device"
+    task_prefix: str = "/task"
 
     # zabbix配置
     zabbix: dict = {
-        "ip": "172.16.60.161",
+        "ip": "127.0.0.1",
         "port": 10051,
         "interval": 60
     }
 
     application: dict = {
         "title": "modbus采集平台",
-        "description": "基于python的FastApi+pymodbus+APScheduler开发的采集平台,包括支持http接口修改寄存器数据,定时发送采集数据给zabbix服务端.",
-        "version": "V1.0"
+        "description": "基于python的FastApi+pymodbus+APScheduler开发的采集平台定时发送采集数据给zabbix服务端.",
+        "version": "V1.1"
     }

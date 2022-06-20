@@ -17,7 +17,7 @@ if not os.path.exists(log_path):
     os.makedirs(log_path)
 
 
-UtilsLog = {
+LogConfig = {
     'version': 1,  # 保留的参数，默认是1
     'disable_existing_loggers': False,  # 是否禁用已经存在的logger实例
     # 日志输出格式的定义
@@ -50,7 +50,7 @@ UtilsLog = {
             'filename': os.path.join(log_path, "default.log"),  # 日志文件路径
             'when': 'D',
             'interval': 1,
-            'backupCount': 30,  # 日志文件备份的数量
+            'backupCount': 7,  # 日志文件备份的数量
             'formatter': 'standard',  # 日志输出格式
             'encoding': 'utf-8',
         },
@@ -61,7 +61,7 @@ UtilsLog = {
             'filename': os.path.join(log_path, "error.log"),  # 日志文件路径
             'when': 'D',
             'interval': 1,
-            'backupCount': 30,  # 日志文件备份的数量
+            'backupCount': 7,  # 日志文件备份的数量
             'formatter': 'error',  # 日志格式
             'encoding': 'utf-8',
         },

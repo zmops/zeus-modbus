@@ -9,16 +9,16 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
 from config import ConfigSettings
-from utils import UtilsLog
+from log import LogConfig
 from api.router import api_router
 from core.errors import response_error_handler, validation_error_handler
-from core.events import create_start_app_handler, create_stop_app_handler
+from events import create_start_app_handler, create_stop_app_handler
 
 
 def create_application() -> FastAPI:
 
     # 导入日志配置
-    logging.config.dictConfig(UtilsLog)
+    logging.config.dictConfig(LogConfig)
 
     # 导入配置
     config_settings = ConfigSettings()
